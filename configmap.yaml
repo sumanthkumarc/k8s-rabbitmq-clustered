@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-config
+data:
+  enabled_plugins: |
+      [rabbitmq_management,rabbitmq_peer_discovery_k8s].
+
+  rabbitmq.conf: |
+      ## Cluster formation
+      cluster_formation.peer_discovery_backend  = rabbit_peer_discovery_k8s
+      cluster_formation.k8s.host = kubernetes.default.svc.cluster.local      
+      cluster_formation.k8s.address_type = hostname      
+      cluster_formation.node_cleanup.interval = 30      
+      cluster_formation.node_cleanup.only_log_warning = true
+      cluster_partition_handling = autoheal
+      queue_master_locator=min-masters
+
+      # rabbit
+      loopback_users = none
+      listeners.tcp.default = 5672
+      hipe_compile = false
+
+      # rabbitmq management
+      management.tcp.port = 15672
+      # If we want to move rmq UI to some other uri.
+      # management.path_prefix = rabbitmq
+      # custom definitions.
+      # management.load_definitions = /etc/rabbitmq/rmq.definitions
+      
+
